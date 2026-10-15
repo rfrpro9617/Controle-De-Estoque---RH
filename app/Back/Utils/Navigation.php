@@ -41,4 +41,17 @@ final class Navigation
 
     return $groups;
   }
+
+  public static function findBySlug(array $groups, string $slug): ?array
+  {
+    foreach ($groups as $items) {
+      foreach ($items as $item) {
+        if ($item['slug'] === $slug) {
+          return $item;
+        }
+      }
+    }
+
+    return null;
+  }
 }
