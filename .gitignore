@@ -1,0 +1,7 @@
+/\.env
+/\.env_
+/\.env.*
+/config/database.php
+/vendor/
+/storage/logs/*
+/storage/cache/*
