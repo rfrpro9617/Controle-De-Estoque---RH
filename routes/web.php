@@ -4,7 +4,9 @@ use Core\Router;
 use Core\AuthGuard;
 
 use App\Back\Controllers\AuthController;
+use App\Back\Controllers\CategoryController;
 use App\Back\Controllers\PdfTextExtractorController;
+use App\Back\Controllers\SupplierController;
 
 $router = new Router();
 
@@ -36,6 +38,18 @@ $router->get(
 $router->post(
   '/estoque/importar-pdf',
   [PdfTextExtractorController::class, 'uploadPdf'],
+  [AuthGuard::class]
+);
+
+$router->get(
+  '/estoque/fornecedores',
+  [SupplierController::class, 'index'],
+  [AuthGuard::class]
+);
+
+$router->get(
+  '/estoque/categorias',
+  [CategoryController::class, 'index'],
   [AuthGuard::class]
 );
 
