@@ -2,7 +2,7 @@
   <header class="mb-5">
     <p class="mb-[3px] text-[10px] font-semibold uppercase tracking-[0.08em] text-[#728078]">Sistema de Estoque</p>
     <h1 class="m-0 font-['Manrope'] text-[21px] font-extrabold leading-[1.3] md:text-[23px]" id="page-title">Importar PDF</h1>
-    <p class="mt-[3px] text-xs text-[#66736b]">Envie um pedido em PDF para extrair o texto e preparar a importação dos materiais.</p>
+    <p class="mt-[3px] text-xs text-[#66736b]">Envie o pedido em PDF para cadastrar o fornecedor, o pedido e os materiais identificados.</p>
   </header>
 
   <div class="max-w-3xl rounded-lg border border-[#dce3de] bg-white p-5 shadow-sm md:p-7">
@@ -37,6 +37,10 @@
     <div class="mt-5 max-w-3xl rounded-md border px-4 py-3 text-sm <?= $feedbackClasses ?>" role="<?= ($feedbackType ?? 'error') === 'error' ? 'alert' : 'status' ?>">
       <?= htmlspecialchars($feedback, ENT_QUOTES, 'UTF-8') ?>
     </div>
+  <?php endif; ?>
+
+  <?php if (!empty($createdOrderId)): ?>
+    <a class="mt-3 inline-flex min-h-9 items-center rounded-md bg-[#26734a] px-3 text-xs font-semibold text-white no-underline hover:bg-[#1e603d]" href="<?= htmlspecialchars(BASE_URL . '/estoque/pedidos/' . $createdOrderId, ENT_QUOTES, 'UTF-8') ?>">Ver pedido cadastrado</a>
   <?php endif; ?>
 
   <?php if (!empty($extractedText)): ?>

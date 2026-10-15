@@ -3,10 +3,17 @@
 namespace App\Back\Services;
 
 use App\Back\DTOs\PurchaseOrderDTO;
+use App\Back\Models\User;
 use App\Back\Repositories\PdfTextExtractorRepository;
 use App\Back\Utils\MoneyParser;
 use App\Back\Utils\RegexCapture;
+use Core\Auth;
+use Core\Database;
 use Smalot\PdfParser\Parser;
+use DateTimeImmutable;
+use LogicException;
+use Throwable;
+use UnexpectedValueException;
 
 final class PdfTextExtractorService
 {
@@ -119,19 +126,6 @@ final class PdfTextExtractorService
       }
     }
 
-    foreach ($extractedItems as $item) {
-      $itemCategory = trim(explode('|', $item['categoria'], 2)[0]);
-      if ($itemCategory === '') {
-        continue;
-      }
-
-      $this->pdfTextExtractorRepository->insertMaterial(
-        $itemCategory,
-        $item['descricao'],
-        $item['codigo']
-      );
-    }
-
     // // Seção do pdf - Totais do Pedido
 
     $pattern = '/Totais do Pedido\s+' .
@@ -167,14 +161,62 @@ final class PdfTextExtractorService
     }
 
     $supplier = $supplierTotals['supplier'] ?? null;
-    if (is_string($supplier) && trim($supplier) !== '') {
-      $this->pdfTextExtractorRepository->insertSupplier($supplier);
+    $orderNumber = RegexCapture::firstGroup($orderMatch);
+    $orderDate = RegexCapture::firstGroup($data);
+
+    if ($orderNumber === null || $orderDate === null || !is_string($supplier) || trim($supplier) === '') {
+      throw new UnexpectedValueException('O PDF não contém número, data ou fornecedor suficientes para cadastrar o pedido.');
+    }
+
+    $parsedDate = DateTimeImmutable::createFromFormat('!d/m/Y H:i:s', $orderDate);
+    $dateErrors = DateTimeImmutable::getLastErrors();
+    if (
+      $parsedDate === false
+      || ($dateErrors !== false && ($dateErrors['warning_count'] > 0 || $dateErrors['error_count'] > 0))
+    ) {
+      throw new UnexpectedValueException('A data do pedido no PDF está em um formato inválido.');
+    }
+
+    $connection = Database::connection();
+    try {
+      $connection->beginTransaction();
+      $requester = Auth::user();
+      if (!$requester instanceof User) {
+        throw new LogicException('Não foi possível identificar o usuário solicitante do pedido.');
+      }
+
+      $supplierId = $this->pdfTextExtractorRepository->insertSupplier($supplier);
+      $orderId = $this->pdfTextExtractorRepository->insertPurchaseOrder(
+        $orderNumber,
+        $parsedDate->format('Y-m-d'),
+        $supplierId,
+        $requester->id
+      );
+
+      foreach ($extractedItems as $item) {
+        $itemCategory = trim(explode('|', $item['categoria'], 2)[0]);
+        if ($itemCategory === '') {
+          continue;
+        }
+
+        $this->pdfTextExtractorRepository->insertMaterial(
+          $itemCategory,
+          $item['descricao'],
+          $item['codigo']
+        );
+      }
+      $connection->commit();
+    } catch (Throwable $exception) {
+      if ($connection->inTransaction()) {
+        $connection->rollBack();
+      }
+      throw $exception;
     }
 
     return new PurchaseOrderDTO(
-      orderNumber: RegexCapture::firstGroup($orderMatch),
+      orderNumber: $orderNumber,
       situation: RegexCapture::firstGroup($situation),
-      orderDate: RegexCapture::firstGroup($data),
+      orderDate: $orderDate,
       purchaseOrder: RegexCapture::firstGroup($purchaseOrder),
       category: RegexCapture::firstGroup($category),
       additionalInfo: RegexCapture::firstGroup($additionalInfo),
@@ -201,6 +243,7 @@ final class PdfTextExtractorService
       orderTotals: $orderTotals ?: null,
       supplierTotals: $supplierTotals ?: null,
       sourceText: $text,
+      orderId: $orderId,
     );
   }
 }

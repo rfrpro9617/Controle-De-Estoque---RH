@@ -37,9 +37,20 @@ final class PdfTextExtractorController extends Controller
 
     try {
       $extractedData = $this->pdfTextExtractorService->extractPurchaseOrder($validation['temporaryPath']);
-    } catch (\Exception $exception) {
+    } catch (\UnexpectedValueException $exception) {
       $this->renderSection('importar-pdf', [
-        'feedback' => 'Não foi possível processar este PDF ou cadastrar o fornecedor. Verifique se o arquivo não está corrompido ou protegido por senha.',
+        'feedback' => $exception->getMessage(),
+        'feedbackType' => 'error',
+      ]);
+      return;
+    } catch (\Throwable $exception) {
+      error_log(sprintf(
+        'Falha ao importar pedido do PDF (%s): %s',
+        $exception::class,
+        $exception->getMessage()
+      ));
+      $this->renderSection('importar-pdf', [
+        'feedback' => 'Não foi possível processar o PDF ou salvar o pedido. Verifique o arquivo e tente novamente.',
         'feedbackType' => 'error',
       ]);
       return;
@@ -49,9 +60,10 @@ final class PdfTextExtractorController extends Controller
     $hasExtractedText = trim($text) !== '';
     $this->renderSection('importar-pdf', [
       'feedback' => $hasExtractedText
-        ? 'PDF lido com sucesso.'
+        ? 'PDF lido e pedido #' . $extractedData->orderNumber . ' cadastrado com sucesso.'
         : 'O PDF foi aberto, mas não contém texto extraível. Arquivos digitalizados podem exigir OCR.',
       'feedbackType' => $hasExtractedText ? 'success' : 'warning',
+      'createdOrderId' => $extractedData->orderId,
       'extractedText' => $hasExtractedText ? mb_substr($text, 0, 12000) : '',
       'extractedCharacterCount' => mb_strlen($text),
       'textPreviewTruncated' => mb_strlen($text) > 12000,

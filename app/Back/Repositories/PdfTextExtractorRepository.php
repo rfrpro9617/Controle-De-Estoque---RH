@@ -39,14 +39,32 @@ final class PdfTextExtractorRepository
     ]);
   }
 
-  public function insertSupplier(string $supplier): bool
+  public function insertSupplier(string $supplier): int
   {
     $stmt = Database::connection()->prepare(
       'INSERT INTO estoque_fornecedores (nome)
        VALUES (:nome)
-       ON DUPLICATE KEY UPDATE nome = VALUES(nome)'
+       ON DUPLICATE KEY UPDATE id = LAST_INSERT_ID(id), nome = VALUES(nome)'
     );
 
-    return $stmt->execute(['nome' => trim($supplier)]);
+    $stmt->execute(['nome' => trim($supplier)]);
+
+    return (int) Database::connection()->lastInsertId();
+  }
+
+  public function insertPurchaseOrder(string $number, string $date, int $supplierId): int
+  {
+    $stmt = Database::connection()->prepare(
+      'INSERT INTO estoque_pedidos (numero, data, fornecedor_id)
+       VALUES (:numero, :data, :fornecedor_id)
+       ON DUPLICATE KEY UPDATE id = LAST_INSERT_ID(id)'
+    );
+    $stmt->execute([
+      'numero' => trim($number),
+      'data' => $date,
+      'fornecedor_id' => $supplierId,
+    ]);
+
+    return (int) Database::connection()->lastInsertId();
   }
 }
