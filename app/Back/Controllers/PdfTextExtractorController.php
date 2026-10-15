@@ -61,18 +61,10 @@ final class PdfTextExtractorController extends Controller
   private function renderSection(string $section, array $extraData = []): void
   {
     $navigationGroups = Navigation::groups(BASE_URL . '/estoque');
+    $selectedSection = Navigation::findBySlug($navigationGroups, $section);
 
-    foreach ($navigationGroups as $items) {
-      foreach ($items as $item) {
-        if ($item['slug'] === $section) {
-          $selectedSection = $item;
-        }
-      }
-    }
-
-    if (!isset($selectedSection)) {
-      http_response_code(404);
-      echo '404 - Página não encontrada';
+    if ($selectedSection === null) {
+      $this->notFound();
       return;
     }
 
@@ -82,7 +74,7 @@ final class PdfTextExtractorController extends Controller
       array_merge([
         'title' => $selectedSection['label'] . ' | Sistema de Estoque',
         'activeSection' => $section,
-        'navigationGroups' => $navigationGroups ?? [],
+        'navigationGroups' => $navigationGroups,
         'section' => $selectedSection,
       ], $extraData),
       'inventory'

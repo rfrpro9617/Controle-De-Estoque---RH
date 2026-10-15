@@ -15,18 +15,10 @@ final class CategoryController extends Controller
   public function index(): void
   {
     $navigationGroups = Navigation::groups(BASE_URL . '/estoque');
+    $selectedSection = Navigation::findBySlug($navigationGroups, 'categorias');
 
-    foreach ($navigationGroups as $items) {
-      foreach ($items as $item) {
-        if ($item['slug'] === 'categorias') {
-          $selectedSection = $item;
-        }
-      }
-    }
-
-    if (!isset($selectedSection)) {
-      http_response_code(404);
-      echo '404 - Página não encontrada';
+    if ($selectedSection === null) {
+      $this->notFound();
       return;
     }
 
