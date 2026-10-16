@@ -4,9 +4,6 @@ namespace App\Back\Validators;
 
 final class AuthValidator
 {
-  /**
-   * @return array{email: string, password: string}|null
-   */
   public function validateLogin(array $input): ?array
   {
     $emailInput = $input['email'] ?? null;
@@ -27,9 +24,6 @@ final class AuthValidator
     ];
   }
 
-  /**
-   * @return array{name: string, email: string, password: string}|null
-   */
   public function validateRegistration(array $input): ?array
   {
     $name = $input['name'] ?? null;

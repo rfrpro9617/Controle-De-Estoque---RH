@@ -61,7 +61,7 @@ final class PdfTextExtractorController extends Controller
     $this->renderSection('importar-pdf', [
       'feedback' => $hasExtractedText
         ? 'PDF lido e pedido #' . $extractedData->orderNumber . ' cadastrado com sucesso.'
-        : 'O PDF foi aberto, mas não contém texto extraível. Arquivos digitalizados podem exigir OCR.',
+        : 'O PDF foi aberto, mas não contém texto extraível.',
       'feedbackType' => $hasExtractedText ? 'success' : 'warning',
       'createdOrderId' => $extractedData->orderId,
       'extractedText' => $hasExtractedText ? mb_substr($text, 0, 12000) : '',

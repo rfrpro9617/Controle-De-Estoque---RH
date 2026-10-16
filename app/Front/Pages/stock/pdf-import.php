@@ -17,7 +17,7 @@
           type="file"
           accept=".pdf,application/pdf"
           required>
-        <p class="mt-2 text-xs text-[#66736b]">Tamanho máximo: 10 MB. O arquivo é processado nesta requisição e não fica armazenado.</p>
+        <p class="mt-2 text-xs text-[#66736b]">Tamanho máximo: 10 MB.</p>
       </div>
       <button class="inline-flex min-h-10 w-fit items-center justify-center gap-2 rounded-md border-0 bg-[#26734a] px-4 py-2 text-sm font-semibold text-white hover:bg-[#1d5d3b] focus:outline-none focus:ring-2 focus:ring-[#26734a] focus:ring-offset-2" type="submit">
         <i class="h-4 w-4" data-lucide="file-up" aria-hidden="true"></i>

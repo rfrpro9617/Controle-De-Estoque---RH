@@ -77,7 +77,7 @@ final class AuthController extends Controller
     $registration = $this->validator->validateRegistration($_POST);
     if ($registration === null) {
       $this->showRegistrationError(
-        'Confira os dados. A senha deve ter ao menos 8 caracteres e no máximo 72 bytes, e a confirmação deve corresponder.'
+        'Os dados fornecidos são inválidos ou incompletos.'
       );
       return;
     }

@@ -79,9 +79,3 @@ Pois o id do usuário salvo na sessão, pode não ser mais elegível no banco de
 A tela autenticada `/estoque/importar-pdf` recebe arquivos PDF de até 10 MB e usa `Smalot\PdfParser` para extrair o texto durante a requisição. O arquivo temporário não é copiado para o armazenamento da aplicação. A página apresenta uma prévia limitada a 12.000 caracteres.
 
 Instale as dependências com `composer install`. Ao importar um PDF, os itens extraídos são gravados em `estoque_materiais`; a descrição é armazenada em `nome`, o código em `codigo` e cada material é associado à categoria criada ou localizada em `estoque_categorias`.
-
-# Pedidos de compra
-
-A tela autenticada `/estoque/pedidos` lista os pedidos de `estoque_pedidos` e permite pesquisar por número ou fornecedor e filtrar pela situação. O botão de novo pedido abre a importação de PDF. `PdfTextExtractorService` extrai o número, a data e o fornecedor e chama `PdfTextExtractorRepository` para cadastrar o pedido; `solicitante_id` recebe o ID do usuário autenticado e `situacao` não é enviada no `INSERT`, para que o banco aplique seu valor padrão.
-
-O cadastro e a consulta do pedido não alteram o estoque. A tela mostra apenas os campos disponíveis em `estoque_pedidos`; valores e itens do pedido dependem de tabelas próprias que não fazem parte deste cadastro.

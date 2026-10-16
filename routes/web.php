@@ -13,6 +13,7 @@ $router = new Router();
 
 // Publics
 $router->get('/', [AuthController::class, 'index']);
+$router->get('/login', [AuthController::class, 'index']);
 $router->post('/login', [AuthController::class, 'login']);
 $router->get('/cadastro', [AuthController::class, 'registrationForm']);
 $router->post('/cadastro', [AuthController::class, 'register']);
