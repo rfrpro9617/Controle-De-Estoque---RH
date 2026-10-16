@@ -11,9 +11,6 @@ final class PurchaseOrderService
     private PurchaseOrderRepository $purchaseOrderRepository = new PurchaseOrderRepository()
   ) {}
 
-  /**
-   * @return PurchaseOrder[]
-   */
   public function findAll(string $search = '', string $situation = ''): array
   {
     return $this->purchaseOrderRepository->findAll($search, $situation);

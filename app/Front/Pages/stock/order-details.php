@@ -23,9 +23,5 @@
       <dt class="text-[10px] font-semibold uppercase tracking-[0.08em] text-[#728078]">Situação</dt>
       <dd class="mb-0 mt-1 text-sm text-[#18221b]"><?= htmlspecialchars($order->situationLabel(), ENT_QUOTES, 'UTF-8') ?></dd>
     </div>
-    <div class="bg-white p-4 sm:col-span-2">
-      <dt class="text-[10px] font-semibold uppercase tracking-[0.08em] text-[#728078]">Solicitante</dt>
-      <dd class="mb-0 mt-1 text-sm text-[#18221b]"><?= $order->requesterId === null ? 'Não informado' : '#' . $order->requesterId ?></dd>
-    </div>
   </dl>
 </section>

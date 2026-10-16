@@ -11,7 +11,6 @@ final class PurchaseOrder
     public readonly int $supplierId,
     public readonly string $supplierName,
     public readonly string $situation,
-    public readonly ?int $requesterId,
   ) {}
 
   public function situationLabel(): string

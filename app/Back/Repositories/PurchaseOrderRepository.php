@@ -13,7 +13,7 @@ final class PurchaseOrderRepository
   public function findAll(string $search = '', string $situation = ''): array
   {
     $sql = 'SELECT pedido.id, pedido.numero, pedido.data, pedido.fornecedor_id,
-                   fornecedor.nome AS fornecedor_nome, pedido.situacao, pedido.solicitante_id
+                   fornecedor.nome AS fornecedor_nome, pedido.situacao
             FROM estoque_pedidos pedido
             INNER JOIN estoque_fornecedores fornecedor ON fornecedor.id = pedido.fornecedor_id';
     $conditions = [];
@@ -67,8 +67,7 @@ final class PurchaseOrderRepository
       $row['data'],
       (int) $row['fornecedor_id'],
       $row['fornecedor_nome'],
-      $row['situacao'],
-      $row['solicitante_id'] === null ? null : (int) $row['solicitante_id']
+      $row['situacao']
     );
   }
 }
