@@ -19,7 +19,7 @@ final class PdfTextExtractorRepository
     return (int) Database::connection()->lastInsertId();
   }
 
-  public function insertMaterial(string $category, string $description, string $code): bool
+  public function insertMaterial(string $category, string $description, string $code): int
   {
     $categoryId = $this->insertCategory($category);
 
@@ -27,16 +27,19 @@ final class PdfTextExtractorRepository
       'INSERT INTO estoque_materiais (categoria_id, nome, codigo)
        VALUES (:categoria_id, :nome, :codigo)
        ON DUPLICATE KEY UPDATE
+         id = LAST_INSERT_ID(id),
          categoria_id = VALUES(categoria_id),
          nome = VALUES(nome),
          codigo = VALUES(codigo)'
     );
 
-    return $stmt->execute([
+    $stmt->execute([
       'categoria_id' => $categoryId,
       'nome' => trim($description),
       'codigo' => trim($code),
     ]);
+
+    return (int) Database::connection()->lastInsertId();
   }
 
   public function insertSupplier(string $supplier): int
@@ -66,5 +69,24 @@ final class PdfTextExtractorRepository
     ]);
 
     return (int) Database::connection()->lastInsertId();
+  }
+
+  public function insertPurchaseOrderItem(
+    int $purchaseOrderId,
+    int $materialId,
+    int $quantity,
+    float $unitPrice
+  ): bool {
+    $stmt = Database::connection()->prepare(
+      'INSERT INTO estoque_pedido_itens (pedido_id, material_id, quantidade, valor_unitario)
+       VALUES (:pedido_id, :material_id, :quantidade, :valor_unitario)'
+    );
+
+    return $stmt->execute([
+      'pedido_id' => $purchaseOrderId,
+      'material_id' => $materialId,
+      'quantidade' => $quantity,
+      'valor_unitario' => $unitPrice,
+    ]);
   }
 }

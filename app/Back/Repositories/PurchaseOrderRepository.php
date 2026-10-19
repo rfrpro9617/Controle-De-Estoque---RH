@@ -12,27 +12,33 @@ final class PurchaseOrderRepository
    */
   public function findAll(string $search = '', string $situation = ''): array
   {
-    $sql = 'SELECT pedido.id, pedido.numero, pedido.data, pedido.fornecedor_id,
-                   fornecedor.nome AS fornecedor_nome, pedido.situacao
+    $sql = 'SELECT 
+              pedido.id,
+              pedido.numero,
+              pedido.data,
+              pedido.fornecedor_id,
+              fornecedor.nome AS fornecedor_nome,
+              pedido.situacao
             FROM estoque_pedidos pedido
-            INNER JOIN estoque_fornecedores fornecedor ON fornecedor.id = pedido.fornecedor_id';
+              INNER JOIN estoque_fornecedores fornecedor 
+                ON fornecedor.id = pedido.fornecedor_id';
     $conditions = [];
     $parameters = [];
 
-    if ($search !== '') {
-      $conditions[] = '(pedido.numero LIKE :search_number OR fornecedor.nome LIKE :search_supplier)';
-      $parameters['search_number'] = '%' . $search . '%';
-      $parameters['search_supplier'] = '%' . $search . '%';
-    }
+    // if ($search !== '') {
+    //   $conditions[] = '(pedido.numero LIKE :search_number OR fornecedor.nome LIKE :search_supplier)';
+    //   $parameters['search_number'] = '%' . $search . '%';
+    //   $parameters['search_supplier'] = '%' . $search . '%';
+    // }
 
-    if ($situation !== '') {
-      $conditions[] = 'pedido.situacao = :situation';
-      $parameters['situation'] = $situation;
-    }
+    // if ($situation !== '') {
+    //   $conditions[] = 'pedido.situacao = :situation';
+    //   $parameters['situation'] = $situation;
+    // }
 
-    if ($conditions !== []) {
-      $sql .= ' WHERE ' . implode(' AND ', $conditions);
-    }
+    // if ($conditions !== []) {
+    //   $sql .= ' WHERE ' . implode(' AND ', $conditions);
+    // }
 
     $sql .= ' ORDER BY pedido.data DESC, pedido.id DESC';
     $stmt = Database::connection()->prepare($sql);

@@ -199,10 +199,16 @@ final class PdfTextExtractorService
           continue;
         }
 
-        $this->pdfTextExtractorRepository->insertMaterial(
+        $materialId = $this->pdfTextExtractorRepository->insertMaterial(
           $itemCategory,
           $item['descricao'],
           $item['codigo']
+        );
+        $this->pdfTextExtractorRepository->insertPurchaseOrderItem(
+          $orderId,
+          $materialId,
+          $item['quantidade'],
+          $item['valor_unitario']
         );
       }
       $connection->commit();
