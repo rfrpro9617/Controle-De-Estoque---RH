@@ -79,3 +79,17 @@ Pois o id do usuário salvo na sessão, pode não ser mais elegível no banco de
 A tela autenticada `/estoque/importar-pdf` recebe arquivos PDF de até 10 MB e usa `Smalot\PdfParser` para extrair o texto durante a requisição. O arquivo temporário não é copiado para o armazenamento da aplicação. A página apresenta uma prévia limitada a 12.000 caracteres.
 
 Instale as dependências com `composer install`. Ao importar um PDF, os itens extraídos são gravados em `estoque_materiais`; a descrição é armazenada em `nome`, o código em `codigo` e cada material é associado à categoria criada ou localizada em `estoque_categorias`. Cada item também é vinculado ao pedido em `estoque_pedido_itens`, com quantidade e valor unitário.
+
+# Consulta de estoque
+
+A tela autenticada `/estoque/estoque` lista os materiais ativos e inativos de `estoque_materiais`, relacionando a categoria em `estoque_categorias`. O estoque exibido vem de `estoque_central`; o status é calculado como disponível, estoque baixo (quantidade atual menor ou igual ao mínimo), sem estoque ou inativo. A tela permite filtrar por código, nome, categoria e status.
+
+Na mesma tela, a ação **Nova saída** registra o envio de material para um setor ativo. A operação reduz `estoque_central` e insere uma movimentação do tipo `saida` em `estoque_movimentacoes` dentro da mesma transação; se o setor estiver inativo ou não houver saldo suficiente, nenhuma alteração é persistida.
+
+A tela autenticada `/estoque/distribuido-aos-setores` consulta `estoque_posses` para exibir os materiais sob responsabilidade de cada setor. Ao registrar uma saída, a quantidade da posse do par material/setor é incrementada ou criada, e `ultima_saida` é atualizada na mesma transação da saída e do abatimento no estoque central.
+
+A tela autenticada `/estoque/movimentacoes` exibe o histórico de `estoque_movimentacoes`, incluindo material, categoria, tipo, quantidade, setor, observação e pedido relacionado, com filtros por busca, tipo, setor, categoria e intervalo de datas.
+
+A tela autenticada `/estoque/gastos` consulta `estoque_gastos`, mostra o total do mês e agrega quantidade recebida e valor total por material. É possível filtrar por mês, categoria e material.
+
+Ao importar um pedido, cada quantidade de item é lançada em `estoque_central`, salva em `quantidade_recebida` e registrada como uma movimentação de entrada vinculada ao pedido. A reimportação de um pedido que já possui itens não duplica os itens nem o saldo.

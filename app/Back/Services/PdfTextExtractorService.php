@@ -193,23 +193,25 @@ final class PdfTextExtractorService
         $requester->id
       );
 
-      foreach ($extractedItems as $item) {
-        $itemCategory = trim(explode('|', $item['categoria'], 2)[0]);
-        if ($itemCategory === '') {
-          continue;
-        }
+      if (!$this->pdfTextExtractorRepository->hasPurchaseOrderItems($orderId)) {
+        foreach ($extractedItems as $item) {
+          $itemCategory = trim(explode('|', $item['categoria'], 2)[0]);
+          if ($itemCategory === '') {
+            continue;
+          }
 
-        $materialId = $this->pdfTextExtractorRepository->insertMaterial(
-          $itemCategory,
-          $item['descricao'],
-          $item['codigo']
-        );
-        $this->pdfTextExtractorRepository->insertPurchaseOrderItem(
-          $orderId,
-          $materialId,
-          $item['quantidade'],
-          $item['valor_unitario']
-        );
+          $materialId = $this->pdfTextExtractorRepository->insertMaterial(
+            $itemCategory,
+            $item['descricao'],
+            $item['codigo']
+          );
+          $this->pdfTextExtractorRepository->insertPurchaseOrderItem(
+            $orderId,
+            $materialId,
+            $item['quantidade'],
+            $item['valor_unitario']
+          );
+        }
       }
       $connection->commit();
     } catch (Throwable $exception) {

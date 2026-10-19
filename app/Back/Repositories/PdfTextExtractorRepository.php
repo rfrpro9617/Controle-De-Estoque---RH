@@ -77,16 +77,61 @@ final class PdfTextExtractorRepository
     int $quantity,
     float $unitPrice
   ): bool {
-    $stmt = Database::connection()->prepare(
-      'INSERT INTO estoque_pedido_itens (pedido_id, material_id, quantidade, valor_unitario)
-       VALUES (:pedido_id, :material_id, :quantidade, :valor_unitario)'
+    $connection = Database::connection();
+    $stmt = $connection->prepare(
+      'INSERT INTO estoque_pedido_itens
+        (pedido_id, material_id, quantidade, valor_unitario, quantidade_recebida)
+       VALUES (:pedido_id, :material_id, :quantidade, :valor_unitario, :quantidade_recebida)'
     );
 
-    return $stmt->execute([
+    $inserted = $stmt->execute([
       'pedido_id' => $purchaseOrderId,
       'material_id' => $materialId,
       'quantidade' => $quantity,
       'valor_unitario' => $unitPrice,
+      'quantidade_recebida' => $quantity,
     ]);
+
+    if (!$inserted) {
+      throw new \RuntimeException('Não foi possível salvar o item do pedido importado.');
+    }
+
+    $updateStock = $connection->prepare(
+      'UPDATE estoque_materiais
+       SET estoque_central = estoque_central + :quantidade
+       WHERE id = :material_id'
+    );
+    $updateStock->execute([
+      'quantidade' => $quantity,
+      'material_id' => $materialId,
+    ]);
+
+    if ($updateStock->rowCount() !== 1) {
+      throw new \RuntimeException('Não foi possível atualizar o estoque do material importado.');
+    }
+
+    $movement = $connection->prepare(
+      'INSERT INTO estoque_movimentacoes
+        (material_id, tipo, quantidade, pedido_id, observacao)
+       VALUES (:material_id, \'entrada\', :quantidade, :pedido_id, :observacao)'
+    );
+    $movement->execute([
+      'material_id' => $materialId,
+      'quantidade' => $quantity,
+      'pedido_id' => $purchaseOrderId,
+      'observacao' => 'Recebimento registrado na importação do pedido.',
+    ]);
+
+    return $inserted;
+  }
+
+  public function hasPurchaseOrderItems(int $purchaseOrderId): bool
+  {
+    $statement = Database::connection()->prepare(
+      'SELECT 1 FROM estoque_pedido_itens WHERE pedido_id = :pedido_id LIMIT 1'
+    );
+    $statement->execute(['pedido_id' => $purchaseOrderId]);
+
+    return $statement->fetchColumn() !== false;
   }
 }

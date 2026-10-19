@@ -23,7 +23,7 @@ $statusClasses = [
   <?php endif; ?>
 
   <p class="mb-3 rounded-md border border-[#c9dbe2] bg-[#eaf1f3] px-3 py-[9px] text-[11px] text-[#334c56]">
-    Um pedido de compra não altera o estoque. O estoque central só muda quando uma entrada é efetivamente registrada, inclusive em recebimentos parciais.
+    Ao importar o pedido, as quantidades dos itens são lançadas no estoque central e registradas como recebidas. Confira as quantidades antes de importar o PDF.
   </p>
 
   <form action="<?= htmlspecialchars(BASE_URL . '/estoque/pedidos', ENT_QUOTES, 'UTF-8') ?>" method="get" class="mb-3 flex flex-wrap gap-2 rounded-lg border border-[#dce3de] bg-white p-2 shadow-sm">

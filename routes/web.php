@@ -8,6 +8,10 @@ use App\Back\Controllers\CategoryController;
 use App\Back\Controllers\PurchaseOrderController;
 use App\Back\Controllers\PdfTextExtractorController;
 use App\Back\Controllers\SupplierController;
+use App\Back\Controllers\StockController;
+use App\Back\Controllers\PossessionController;
+use App\Back\Controllers\MovementController;
+use App\Back\Controllers\ExpenseController;
 
 $router = new Router();
 
@@ -28,6 +32,36 @@ $router->post(
 $router->get(
   '/estoque',
   [PdfTextExtractorController::class, 'index'],
+  [AuthGuard::class]
+);
+
+$router->get(
+  '/estoque/estoque',
+  [StockController::class, 'index'],
+  [AuthGuard::class]
+);
+
+$router->get(
+  '/estoque/distribuido-aos-setores',
+  [PossessionController::class, 'index'],
+  [AuthGuard::class]
+);
+
+$router->get(
+  '/estoque/movimentacoes',
+  [MovementController::class, 'index'],
+  [AuthGuard::class]
+);
+
+$router->get(
+  '/estoque/gastos',
+  [ExpenseController::class, 'index'],
+  [AuthGuard::class]
+);
+
+$router->post(
+  '/estoque/estoque/saida',
+  [StockController::class, 'registerExit'],
   [AuthGuard::class]
 );
 
