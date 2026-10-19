@@ -7,15 +7,12 @@ use Core\Database;
 
 final class SupplierRepository
 {
-  /**
-   * @return Supplier[]
-   */
   public function findAll(): array
   {
     $stmt = Database::connection()->query(
       'SELECT id, nome, ativo
        FROM estoque_fornecedores
-       ORDER BY nome ASC, id ASC'
+       ORDER BY nome ASC'
     );
 
     return array_map(

@@ -34,5 +34,6 @@ final class PurchaseOrderDTO
     public readonly ?array $orderTotals = null,
     public readonly ?array $supplierTotals = null,
     public readonly string $sourceText = '',
+    public readonly ?int $orderId = null,
   ) {}
 }

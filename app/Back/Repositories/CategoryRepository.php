@@ -7,18 +7,26 @@ use Core\Database;
 
 final class CategoryRepository
 {
-  /**
-   * @return Category[]
-   */
   public function findAll(): array
   {
     $stmt = Database::connection()->query(
-      'SELECT categoria.id, categoria.nome, categoria.descricao, categoria.ativo,
-              (SELECT COUNT(*)
-               FROM estoque_materiais material
-               WHERE material.categoria_id = categoria.id) AS quantidade_materiais
-       FROM estoque_categorias categoria
-       ORDER BY categoria.nome ASC, categoria.id ASC'
+      'SELECT 
+        categoria.id,
+        categoria.nome,
+        categoria.descricao,
+        categoria.ativo,
+        COUNT(material.id) AS quantidade_materiais
+      FROM estoque_categorias categoria
+        LEFT JOIN estoque_materiais material
+          ON material.categoria_id = categoria.id
+      GROUP BY 
+        categoria.id,
+        categoria.nome,
+        categoria.descricao,
+        categoria.ativo
+      ORDER BY 
+        categoria.nome ASC, 
+        categoria.id ASC'
     );
 
     return array_map(

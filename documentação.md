@@ -78,4 +78,4 @@ Pois o id do usuário salvo na sessão, pode não ser mais elegível no banco de
 
 A tela autenticada `/estoque/importar-pdf` recebe arquivos PDF de até 10 MB e usa `Smalot\PdfParser` para extrair o texto durante a requisição. O arquivo temporário não é copiado para o armazenamento da aplicação. A página apresenta uma prévia limitada a 12.000 caracteres.
 
-Instale as dependências com `composer install`. Ao importar um PDF, os itens extraídos são gravados em `estoque_materiais`; a descrição é armazenada em `nome`, o código em `codigo` e cada material é associado à categoria criada ou localizada em `estoque_categorias`.
+Instale as dependências com `composer install`. Ao importar um PDF, os itens extraídos são gravados em `estoque_materiais`; a descrição é armazenada em `nome`, o código em `codigo` e cada material é associado à categoria criada ou localizada em `estoque_categorias`. Cada item também é vinculado ao pedido em `estoque_pedido_itens`, com quantidade e valor unitário.

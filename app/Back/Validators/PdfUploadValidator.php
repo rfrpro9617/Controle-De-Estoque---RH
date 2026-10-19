@@ -4,11 +4,9 @@ namespace App\Back\Validators;
 
 final class PdfUploadValidator
 {
+  // 10 MB
   private const MAX_PDF_SIZE = 10 * 1024 * 1024;
 
-  /**
-   * @return array{valid: true, temporaryPath: string}|array{valid: false, message: string}
-   */
   public function validatePdfUpload(array $files): array
   {
     $file = $files['pdf'] ?? null;

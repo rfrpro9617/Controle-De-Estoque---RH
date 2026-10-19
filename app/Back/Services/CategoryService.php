@@ -2,7 +2,6 @@
 
 namespace App\Back\Services;
 
-use App\Back\Models\Category;
 use App\Back\Repositories\CategoryRepository;
 
 final class CategoryService
@@ -11,9 +10,6 @@ final class CategoryService
     private CategoryRepository $categoryRepository = new CategoryRepository()
   ) {}
 
-  /**
-   * @return Category[]
-   */
   public function findAll(): array
   {
     return $this->categoryRepository->findAll();

@@ -39,7 +39,6 @@
           </div>
         <?php endforeach; ?>
       </nav>
-
     </aside>
 
     <div class="min-w-0 flex-1">

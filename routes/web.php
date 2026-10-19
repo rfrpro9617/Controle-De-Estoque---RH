@@ -5,6 +5,7 @@ use Core\AuthGuard;
 
 use App\Back\Controllers\AuthController;
 use App\Back\Controllers\CategoryController;
+use App\Back\Controllers\PurchaseOrderController;
 use App\Back\Controllers\PdfTextExtractorController;
 use App\Back\Controllers\SupplierController;
 
@@ -12,6 +13,7 @@ $router = new Router();
 
 // Publics
 $router->get('/', [AuthController::class, 'index']);
+$router->get('/login', [AuthController::class, 'index']);
 $router->post('/login', [AuthController::class, 'login']);
 $router->get('/cadastro', [AuthController::class, 'registrationForm']);
 $router->post('/cadastro', [AuthController::class, 'register']);
@@ -44,6 +46,18 @@ $router->post(
 $router->get(
   '/estoque/fornecedores',
   [SupplierController::class, 'index'],
+  [AuthGuard::class]
+);
+
+$router->get(
+  '/estoque/pedidos',
+  [PurchaseOrderController::class, 'index'],
+  [AuthGuard::class]
+);
+
+$router->get(
+  '/estoque/pedidos/{id}',
+  [PurchaseOrderController::class, 'show'],
   [AuthGuard::class]
 );
 
